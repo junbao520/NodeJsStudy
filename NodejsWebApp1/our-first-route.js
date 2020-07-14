@@ -9,6 +9,7 @@ async function routes(fastify, options) {
 
     fastify.get('/user', async (request, reply) => {
       
+        debugger;
         let id = request.id;
         return id;
     })

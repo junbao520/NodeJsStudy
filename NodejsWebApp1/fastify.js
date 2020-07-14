@@ -3,7 +3,16 @@
 })
 
 // 声明路由
-fastify.get('/search', function (request, reply) {
+fastify.get('/search1', function (request, reply) {
+  debugger;
+  reply.send({ hello: 'worldSearch' })
+})
+
+fastify.post('/login', function (request, reply) {
+  debugger;
+  let userName=request.userName;
+  let passworld=request.passworld;
+  
   reply.send({ hello: 'worldSearch' })
 })
 
