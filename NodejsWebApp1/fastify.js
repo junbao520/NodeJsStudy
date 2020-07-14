@@ -5,15 +5,18 @@
 // 声明路由
 fastify.get('/search1', function (request, reply) {
   debugger;
-  reply.send({ hello: 'worldSearch' })
+  reply.send({ hello: 'worldSearch update 1 2',hello1:'text' })
 })
 
 fastify.post('/login', function (request, reply) {
   debugger;
-  let userName=request.userName;
-  let passworld=request.passworld;
-  
-  reply.send({ hello: 'worldSearch' })
+  let data={
+    passworld:request.body.password,
+    userName1:request.body.userName,
+  }
+
+  //reply.send({ hello:request.body.userName,hello1:request.body.password })
+  reply.send(data)
 })
 
 
