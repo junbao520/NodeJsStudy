@@ -32,6 +32,8 @@ cnpm install -g  nodemon
 
 jwt资料
 
+https://stackoverflow.com/questions/61716895/using-fastify-onrequest-hook-for-jwt-validation
+
 https://ask.csdn.net/questions/759309
 
 ## 路由和日志
@@ -69,4 +71,14 @@ Incoming Request (请求到达)
                                                           └─▶ onResponse Hook （onResponese钩子
 
 
+
+## knex
+
+mysql8.0会报错
+
+ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY '123456';
+
+let data=await knex.select().from('sys_user');
+
+knex.select().from('sys_user'); 这句话本身不执行查询！由于mysql是事件驱动，异步模式。
 
