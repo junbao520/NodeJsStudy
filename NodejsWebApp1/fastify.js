@@ -1,8 +1,14 @@
 ﻿const fastify = require('fastify')({
-  logger: true
+  logger: true,
+  file: 'log.txt'
 })
 //第一步  安装jwt cnpm i fastify-jwt --save 
 const jwt = require('fastify-jwt')
+
+//npm install fastify-errors-properties --save
+//全局异常处理
+//const createError = require('http-errors')
+
 //第二步注册 jwt
 fastify.register(jwt, { secret: 'supersecret' })
 
@@ -51,15 +57,6 @@ fastify.addHook('onRequest', async (request, reply) => {
            //解密后的信息保存在Request中
            request.data=decoded;
            console.log(decoded);
-
-           //进行Request参数处理
-          //  {
-          //   "page": 1,
-          //   "rows": 30,
-          //   "sort": "CreateDate",
-          //   "order": "desc",
-          //   "wheres": "[]"
-          // }
         }
         else{
           reply.send(err);
@@ -78,15 +75,18 @@ fastify.get('/test', function (request, reply) {
   console.log(request.data);
   reply.send(request.data)
 })
-
-
 //注册路由
 fastify.register(require('./our-first-route'))
 // 启动服务！
 fastify.listen(3000, function (err, address) {
   if (err) {
-    fastify.log.error(err)
-    process.exit(1)
+    //可以考虑写日志
+    fastify.log.error(err);
+    console.log("333333333333333333333");
+    //判断下如果是自定义异常则直接抛出
+    throw err;
+  
+
   }
   fastify.log.info(`server listening on ${address}`)
 })

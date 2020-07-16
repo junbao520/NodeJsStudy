@@ -2,8 +2,11 @@
 
 
 //cnpm install knex --save
-//cnpm install mysql
 
+const { request } = require('express');
+
+//cnpm install mysql
+const { ddpSuccess } = require('./handle');
 var knex = require('knex')({
   client: 'mysql',
   version: '5.7',
@@ -34,7 +37,8 @@ async function routes(fastify, options) {
   })
   //分页查询接口
   fastify.post('/user/GetPageData', async (request, reply) => {
-    try {
+
+      // throw createError(404, 'You are not supposed to reach this.', { header: { 'X-Req-Id': request.id, id: 123 } })
       let page = request.body.page;
       let rows = request.body.rows;
       let sort = request.body.sort;
@@ -57,47 +61,41 @@ async function routes(fastify, options) {
       //集成范围查询
       let querySql =query.toString();
       console.log(querySql);
-      let res = await query;
+      let result = await query;
       console.log("打印完成");
       console.log(new Date());
+      console.log(result);
 
+      // throw.error("test");
       //返回结果
-      let WebResponseContent={status:false,code:'',message:'',data:''};
-      WebResponseContent.status=true;
-      WebResponseContent.data=res;
-      return WebResponseContent;
-
-    } catch (error) {
-      console.log(error);
-      return { hello: ' fastify get world' }
-    }
+      ddpSuccess({reply, result});
+      // let WebResponseContent={status:false,code:'',message:'',data:''};
+      // WebResponseContent.status=true;
+      // WebResponseContent.data=res;
+      // return WebResponseContent;
 
   })
   //添加数据接口
   fastify.post('/user/Add', async (request, reply) => {
     
     //普通接口
+    //throw createError(500, 'You are not supposed to reach this.', { header: { 'X-Req-Id': request.id, id: 123 } })
    // let tableName = request.body.tableName;
-    let tableName="sys_user";
+    let tableName="sys_user1";
     let saveModel=request.body.saveModel;
     saveModel.user_Id=123;
     debugger;
-    //添加
     let result=knex(tableName).insert(saveModel);
     console.log(result.toString());
     result=await result;
 
 
-    let WebResponseContent={status:false,code:'',message:'',data:''};
-    WebResponseContent.status=true;
-    WebResponseContent.data=result;
-    return WebResponseContent;
+    ddpSuccess({reply, result});
 
 
   })
   //更新数据接口
   fastify.post('/user/Update', async (request, reply) => {
-    
     //普通接口
     let tableName="sys_user";
     let saveModel=request.body.saveModel;
@@ -106,11 +104,7 @@ async function routes(fastify, options) {
     let result=knex(tableName).update(saveModel).where(wheres);
     console.log(result.toString());
     result=await result;
-
-    let WebResponseContent={status:false,code:'',message:'',data:''};
-    WebResponseContent.status=true;
-    WebResponseContent.data=result;
-    return WebResponseContent;
+    ddpSuccess({reply, result});
 
   })
  //删除数据接口
@@ -122,10 +116,7 @@ async function routes(fastify, options) {
     let result=knex(tableName).where(wheres).del()
     console.log(result.toString());
     result=await result;
-    let WebResponseContent={status:false,code:'',message:'',data:''};
-    WebResponseContent.status=true;
-    WebResponseContent.data=result;
-    return WebResponseContent;
+    ddpSuccess({reply, result});
   })
  
   fastify.route({
@@ -159,25 +150,6 @@ async function routes(fastify, options) {
       reply.send({ text: 'hello fastify' })
     }
   })
-  //暂时无效
-  // fastify.addHook('onRequest', (req, res, next) => {
-  //   // some code
-  //   console.log("onRequest");
-  //   next()
-  // })
-
-  // fastify.addHook('preHandler', (request, reply, next) => {
-  //   // some code
-  //   console.log("preHandler");
-  //   next()
-  // })
-
-  // fastify.addHook('onResponse', (res, next) => {
-  //   // some code
-  //   console.log('onReponse');
-  //   next()
-  // })
-
 
 
 }
