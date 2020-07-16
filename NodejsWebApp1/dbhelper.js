@@ -1,7 +1,7 @@
 ﻿
 /*!
  * dbHelper Based on the basic database query method
- *
+ * nodeJs Ling https://www.cnblogs.com/laien/p/5610884.html
  * Copyright (c) 2020, 2024, jun bao.
  * Released under the MIT License.
  */
@@ -113,4 +113,15 @@ module.exports = async function del({ tableName, wheres }) {
   let result=knex(tableName).where(wheres).del();
   console.log(result.toString());
   return await result;
+}
+/**
+ * Delete
+ * @name del
+ * @alias edit
+ * @param {tableName,wheres} `deletModel`
+ * @return {object} `saveModel`
+ * @api public
+ */
+module.exports=async function execQuery(sql){
+  return await knex.raw(sql);
 }
