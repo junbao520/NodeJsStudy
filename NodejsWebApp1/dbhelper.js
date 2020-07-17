@@ -20,35 +20,25 @@ var knex = require('knex')({
 });
 
 /**
- * getPageData
- * @name getPageData
- * @alias getPageData
- * @param {page,rows,sort,order,wheres,tableName,wheresIn} `PageDataOptions`
+ * getFirst
+ * @name getFirst
+ * @alias getFirst
+ * @param {tableName,wheres} `PageDataOptions`
  * @return {any}
  * @api public
  */
-module.exports = async function getPageData({page,rows,sort,order,wheres,tableName,wheresIn}) {
-  // let page = PageDataOptions.page;
-  // let rows = PageDataOptions.rows;
-  // let sort = PageDataOptions.sort;
-  // let order = PageDataOptions.order;
-  // let wheres = PageDataOptions.wheres;
-  // let tableName = PageDataOptions.tableName;
-  // let wheresIn = PageDataOptions.wheresIn;
+exports.getFirst = async ({ tableName, wheres }) => {
+  console.log("getFirst");
   var query = knex.select().from(tableName);
   //集成条件判断查询
-  if (wheres != '' && wheres != null&&wheres!={}) {
+  if (wheres != '' && wheres != null && wheres != {}) {
     query = query.andWhere(wheres);
   }
-  //集成In查询
-  if (wheresIn != '' && wheresIn != null&&wheresIn!={}) {
-    query = query.whereIn(wheresIn.key, wheresIn.value)
-  }
-  //集成分页排序
-  query = query.limit(rows).offset((page - 1) * rows).orderBy(sort, order);
+  query = query.limit(1);
   let querySql = query.toString();
   console.log(querySql);
-  return await query;
+  //没有查询出结果返回 null 后续接口方便判断
+  return query;
 }
 /**
  * getPageData
@@ -58,19 +48,23 @@ module.exports = async function getPageData({page,rows,sort,order,wheres,tableNa
  * @return {any}
  * @api public
  */
-module.exports = async function getFirst({tableName,wheres}) {
+exports.getPageData = async ({ page, rows, sort, order, wheres, tableName, wheresIn }) => {
   var query = knex.select().from(tableName);
   //集成条件判断查询
-  if (wheres != '' && wheres != null&&wheres!={}) {
+  if (wheres != '' && wheres != null && wheres != {}) {
     query = query.andWhere(wheres);
   }
-  query = query.limit(1);
+  //集成In查询
+  if (wheresIn != '' && wheresIn != null && wheresIn != {}) {
+    query = query.whereIn(wheresIn.key, wheresIn.value)
+  }
+  //集成分页排序
+  query = query.limit(rows).offset((page - 1) * rows).orderBy(sort, order);
   let querySql = query.toString();
-  let res=await query;
   console.log(querySql);
-  //没有查询出结果返回 null 后续接口方便判断
-  return res=={}?null:res;
+  return query;
 }
+
 /**
  * add
  * @name add
@@ -79,12 +73,11 @@ module.exports = async function getFirst({tableName,wheres}) {
  * @return {any}
  * @api public
  */
-module.exports = async function add({ tableName, mainData }) {
+exports.add = async ({ tableName, mainData }) => {
   let result = knex(tableName).insert(mainData);
   console.log(result.toString());
-  return await result;
+  return result;
 }
-
 /**
  * update
  * @name update
@@ -93,35 +86,45 @@ module.exports = async function add({ tableName, mainData }) {
  * @return {any}
  * @api public
  */
-module.exports = async function update({ tableName, mainData, wheres }) {
-  let result = knex(tableName).update(saveModel);
+exports.update = async ({ tableName, mainData, wheres }) => {
+  let result = knex(tableName).update(mainData);
   if (wheres != '' && wheres != null && wheres != {}) {
     result = result.andWhere(wheres);
   }
+  else {
+    //不允许不带条件更新 抛出异常
+    throw new Error('don not have where')
+
+  }
   console.log(result.toString());
-  return await result;
+  return result;
 }
 /**
  * Delete
- * @name del
+ * @name Delete
  * @alias edit
- * @param {tableName,wheres} `deletModel`
- * @return {object} `saveModel`
+ * @param {tableName,wheres} `deleteModel`
+ * @return {any}
  * @api public
  */
-module.exports = async function del({ tableName, wheres }) {
-  let result=knex(tableName).where(wheres).del();
-  console.log(result.toString());
-  return await result;
+exports.del = ({ tableName, wheres }) => {
+  if (wheres != '' && wheres != null && wheres != {}) {
+    let result = knex(tableName).where(wheres).del();
+    console.log(result.toString());
+    return result;
+  }
+  throw new Error('don not have where')
+
 }
+
 /**
- * Delete
- * @name del
- * @alias edit
- * @param {tableName,wheres} `deletModel`
- * @return {object} `saveModel`
+ * execQuery
+ * @name query
+ * @alias exec sql
+ * @param sql `sql`
+ * @return {object} `queryResult`
  * @api public
  */
-module.exports=async function execQuery(sql){
-  return await knex.raw(sql);
+exports.execQuery=(sql)=>{
+  return  knex.raw(sql);
 }
