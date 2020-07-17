@@ -2,6 +2,7 @@
   logger: true,
   file: 'log.txt'
 })
+//明天先研究权限模块
 //第一步  安装jwt cnpm i fastify-jwt --save 
 const jwt = require('fastify-jwt')
 
